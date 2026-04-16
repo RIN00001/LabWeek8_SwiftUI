@@ -9,9 +9,22 @@ import SwiftUI
 
 @main
 struct LabWeek8_SwiftUIApp: App {
+    @State private var hasEnteredApp = false
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Group {
+                if hasEnteredApp {
+                    ContentView()
+                        .transition(.opacity)
+                } else {
+                    SplashView {
+                        withAnimation(.easeInOut(duration: 0.35)) {
+                            hasEnteredApp = true
+                        }
+                    }
+                }
+            }
         }
     }
 }

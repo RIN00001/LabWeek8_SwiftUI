@@ -8,17 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var transformViewModel = TransformLabViewModel()
+    @StateObject private var physicsViewModel = PhysicsLabViewModel()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            TransformLabTabView(viewModel: transformViewModel)
+                .tabItem {
+                    Label("Transform Lab", systemImage: "wand.and.stars")
+                }
+
+            PhysicsLabView(viewModel: physicsViewModel)
+                .tabItem {
+                    Label("Physics Lab", systemImage: "bolt.fill")
+                }
         }
-        .padding()
+        .tint(AppTheme.accentPurple)
+        .background(AppTheme.screenBackground.ignoresSafeArea())
     }
 }
 
 #Preview {
     ContentView()
+        .preferredColorScheme(.light)
 }
