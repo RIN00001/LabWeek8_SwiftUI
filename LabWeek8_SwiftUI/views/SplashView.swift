@@ -10,43 +10,43 @@ import SwiftUI
 struct SplashView: View {
     let onEnter: () -> Void
 
-    @State private var showLogo = false
-    @State private var showTitle = false
-    @State private var showButton = false
+    @State private var logoVisible = false
+    @State private var titleVisible = false
+    @State private var buttonVisible = false
     @State private var pulseButton = false
     @State private var isPressed = false
 
     var body: some View {
         ZStack {
             SplashGradientBackgroundView()
+                .ignoresSafeArea()
 
             VStack {
                 Spacer()
 
-                VStack(spacing: 18) {
-                    PlaygroundLogoView(size: 54, showsPlate: false)
-                        .scaleEffect(showLogo ? 1 : 0.15)
-                        .rotationEffect(.degrees(showLogo ? 0 : -300))
-                        .opacity(showLogo ? 1 : 0)
+                VStack(spacing: 26) {
+                    PlaygroundLogoView(size: 72, showsPlate: false)
+                        .scaleEffect(logoVisible ? 1.0 : 0.12)
+                        .rotationEffect(.degrees(logoVisible ? 0 : -260))
+                        .opacity(logoVisible ? 1 : 0)
 
-                    VStack(spacing: 4) {
+                    VStack(spacing: 6) {
                         Text("Animation")
-                            .font(.system(size: 28, weight: .heavy, design: .rounded))
+                            .font(.system(size: 34, weight: .heavy, design: .rounded))
                             .foregroundStyle(.white)
 
                         Text("Playground")
-                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                            .font(.system(size: 17, weight: .semibold, design: .rounded))
                             .foregroundStyle(.white.opacity(0.82))
                     }
-                    .opacity(showTitle ? 1 : 0)
-                    .scaleEffect(showTitle ? 1 : 0.84)
+                    .opacity(titleVisible ? 1 : 0)
+                    .scaleEffect(titleVisible ? 1.0 : 0.82)
                 }
 
                 Spacer()
 
                 Button {
                     guard !isPressed else { return }
-
                     isPressed = true
 
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
@@ -82,28 +82,38 @@ struct SplashView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .scaleEffect(isPressed ? 0.96 : (pulseButton ? 1.05 : 1.0))
-                .opacity(showButton ? 1 : 0)
-                .offset(y: showButton ? 0 : 18)
-                .padding(.bottom, 70)
+                .scaleEffect(
+                    isPressed ? 0.96 :
+                    (buttonVisible ? (pulseButton ? 1.05 : 1.0) : 0.2)
+                )
+                .opacity(buttonVisible ? 1 : 0)
+                .padding(.bottom, 72)
             }
             .padding(.horizontal, 24)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
-            withAnimation(.spring(response: 0.92, dampingFraction: 0.70)) {
-                showLogo = true
+            withAnimation(.easeOut(duration: 0.62)) {
+                logoVisible = true
             }
 
-            withAnimation(.spring(response: 0.72, dampingFraction: 0.84).delay(0.48)) {
-                showTitle = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.62) {
+                withAnimation(.easeOut(duration: 0.34)) {
+                    titleVisible = true
+                }
             }
 
-            withAnimation(.spring(response: 0.70, dampingFraction: 0.84).delay(0.84)) {
-                showButton = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.82) {
+                withAnimation(.easeOut(duration: 0.24)) {
+                    buttonVisible = true
+                }
             }
 
-            withAnimation(.easeInOut(duration: 1.35).repeatForever(autoreverses: true).delay(1.05)) {
-                pulseButton = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.08) {
+                withAnimation(.easeInOut(duration: 1.35).repeatForever(autoreverses: true)) {
+                    pulseButton = true
+                }
             }
         }
     }

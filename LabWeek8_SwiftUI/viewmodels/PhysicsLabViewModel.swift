@@ -67,7 +67,7 @@ final class PhysicsLabViewModel: ObservableObject {
     }
 
     func hideTiles() {
-        for (index, tile) in revealOrder.reversed().enumerated() {
+        for (index, tile) in revealOrder.enumerated() {
             DispatchQueue.main.asyncAfter(deadline: .now() + (Double(index) * 0.10)) {
                 withAnimation(.easeInOut(duration: 0.22)) {
                     _ = self.visibleTileIDs.remove(tile.id)
