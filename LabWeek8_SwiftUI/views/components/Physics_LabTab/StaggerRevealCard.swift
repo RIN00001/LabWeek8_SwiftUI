@@ -23,10 +23,10 @@ struct StaggerRevealCard: View {
                             .fill(tile.color)
                             .frame(height: 54)
                             .opacity(isVisible ? 1 : 0.001)
-                            .scaleEffect(isVisible ? 1 : 0.72)
+                            .scaleEffect(isVisible ? 1 : 0.82)
                             .offset(
-                                x: isVisible ? 0 : -18,
-                                y: isVisible ? 0 : -18
+                                x: isVisible ? 0 : -10,
+                                y: isVisible ? 0 : -10
                             )
                     }
                 }

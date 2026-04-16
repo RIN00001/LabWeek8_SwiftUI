@@ -10,7 +10,6 @@ import Combine
 
 @MainActor
 final class PhysicsLabViewModel: ObservableObject {
-    @Published var springProgress: CGFloat = 0.0
     @Published var particles: [ParticleModel] = []
     @Published var visibleTileIDs: Set<UUID> = []
     @Published var morphProgress: Double = 0.0
@@ -36,41 +35,31 @@ final class PhysicsLabViewModel: ObservableObject {
         Color(red: 0.976, green: 0.643, blue: 0.211)
     ]
 
-    func launchSpring() {
-        springProgress = 1.0
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
-            withAnimation(.interpolatingSpring(stiffness: 140, damping: 10)) {
-                self.springProgress = 0.0
-            }
-        }
-    }
-
     func burstParticles() {
-        let newParticles = (0..<20).map { _ in
+        let newParticles = (0..<28).map { _ in
             ParticleModel(
-                x: CGFloat.random(in: -130...130),
-                y: CGFloat.random(in: -85...55),
-                size: CGFloat.random(in: 8...18),
+                x: CGFloat.random(in: -165...165),
+                y: CGFloat.random(in: -155...70),
+                size: CGFloat.random(in: 8...22),
                 color: particlePalette.randomElement() ?? .orange,
-                lifetime: Double.random(in: 0.85...1.35)
+                lifetime: Double.random(in: 0.90...1.35)
             )
         }
 
-        let ids = newParticles.map(\.id)
+        let newParticleIDs = Set(newParticles.map(\.id))
         particles.append(contentsOf: newParticles)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
-            self.particles.removeAll { ids.contains($0.id) }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.55) {
+            self.particles.removeAll { newParticleIDs.contains($0.id) }
         }
     }
 
     func revealTiles() {
         visibleTileIDs.removeAll()
 
-        for (index, tile) in diagonalRevealOrder.enumerated() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + (Double(index) * 0.07)) {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
+        for (index, tile) in revealOrder.enumerated() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + (Double(index) * 0.12)) {
+                withAnimation(.easeOut(duration: 0.26)) {
                     _ = self.visibleTileIDs.insert(tile.id)
                 }
             }
@@ -78,8 +67,8 @@ final class PhysicsLabViewModel: ObservableObject {
     }
 
     func hideTiles() {
-        for (index, tile) in diagonalRevealOrder.reversed().enumerated() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + (Double(index) * 0.06)) {
+        for (index, tile) in revealOrder.reversed().enumerated() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + (Double(index) * 0.10)) {
                 withAnimation(.easeInOut(duration: 0.22)) {
                     _ = self.visibleTileIDs.remove(tile.id)
                 }
@@ -93,19 +82,11 @@ final class PhysicsLabViewModel: ObservableObject {
         }
     }
 
-    private var diagonalRevealOrder: [StaggerTileModel] {
+    private var revealOrder: [StaggerTileModel] {
         tiles.sorted { lhs, rhs in
-            let leftDiagonal = lhs.row + lhs.column
-            let rightDiagonal = rhs.row + rhs.column
-
-            if leftDiagonal != rightDiagonal {
-                return leftDiagonal < rightDiagonal
-            }
-
             if lhs.row != rhs.row {
                 return lhs.row < rhs.row
             }
-
             return lhs.column < rhs.column
         }
     }

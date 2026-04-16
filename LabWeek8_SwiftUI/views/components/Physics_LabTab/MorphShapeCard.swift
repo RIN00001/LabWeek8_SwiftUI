@@ -52,16 +52,35 @@ private struct MorphingOctagonShape: Shape {
 
     func path(in rect: CGRect) -> Path {
         let center = CGPoint(x: rect.midX, y: rect.midY)
-        let outerRadius = min(rect.width, rect.height) * 0.40
-        let innerRadius = outerRadius * (1.0 - 0.52 * progress)
+        let radius = min(rect.width, rect.height) * 0.40
+        let p = CGFloat(progress)
 
-        let points: [CGPoint] = (0..<8).map { index in
+        let octagonPoints: [CGPoint] = (0..<8).map { index in
             let angle = (-90.0 + (Double(index) * 45.0)) * .pi / 180.0
-            let radius = index.isMultiple(of: 2) ? innerRadius : outerRadius
-
             return CGPoint(
                 x: center.x + cos(angle) * radius,
                 y: center.y + sin(angle) * radius
+            )
+        }
+
+        let diamondPoints: [CGPoint] = [
+            CGPoint(x: center.x, y: center.y - radius),
+            CGPoint(x: center.x, y: center.y - radius),
+
+            CGPoint(x: center.x + radius, y: center.y),
+            CGPoint(x: center.x + radius, y: center.y),
+
+            CGPoint(x: center.x, y: center.y + radius),
+            CGPoint(x: center.x, y: center.y + radius),
+
+            CGPoint(x: center.x - radius, y: center.y),
+            CGPoint(x: center.x - radius, y: center.y)
+        ]
+
+        let points = zip(octagonPoints, diamondPoints).map { start, end in
+            CGPoint(
+                x: start.x + (end.x - start.x) * p,
+                y: start.y + (end.y - start.y) * p
             )
         }
 
